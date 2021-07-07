@@ -14,15 +14,13 @@ const argv = yargs(hideBin(process.argv))
         "There is no default value which implies, at least theoretically, 2^32-1 streams " +
         "may be open concurrently at any given time in an Http2Session. The minimum value is 0." +
         " The maximum allowed value is 2^32-1. Default: 4294967295.",
+      default: 4294967295,
     },
   })
   .help().argv;
 
-const options = argv.maxConcurrentStreams
-  ? { settings: { maxConcurrentStreams: argv.maxConcurrentStreams } }
-  : {};
-
-const h2Server = http2.createServer(options);
+const { maxConcurrentStreams } = argv;
+const h2Server = http2.createServer({ settings: { maxConcurrentStreams } });
 
 h2Server.on("stream", (stream, headers) => {
   stream.setEncoding("utf8");
