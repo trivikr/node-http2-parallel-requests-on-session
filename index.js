@@ -2,7 +2,12 @@ const http2 = require("http2");
 const assert = require("assert");
 
 (() => {
-  const server = http2.createServer();
+  const options =
+    process.argv.length === 3 && process.argv[2] === "limit-concurrent-streams"
+      ? { settings: { maxConcurrentStreams: 1 } }
+      : {};
+
+  const server = http2.createServer(options);
 
   server.on("stream", (stream, headers) => {
     stream.setEncoding("utf8");
@@ -52,10 +57,10 @@ const assert = require("assert");
     testRequest("a");
     testRequest("b");
 
-    // Close client and server after five seconds.
+    // Close client and server after two seconds.
     setTimeout(() => {
       client.close();
       server.close();
-    }, 5000);
+    }, 2000);
   });
 })();
