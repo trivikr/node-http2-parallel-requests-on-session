@@ -14,10 +14,15 @@ const argv = yargs(hideBin(process.argv))
         " Minimum: 0. Maximum: 2^32-1.",
       default: 4294967295,
     },
+    "disable-session-cache": {
+      type: "boolean",
+      description: "Creates a new session per request.",
+      default: false,
+    },
   })
   .help().argv;
 
-const { maxConcurrentStreams } = argv;
+const { maxConcurrentStreams, disableSessionCache } = argv;
 const h2Server = http2.createServer({ settings: { maxConcurrentStreams } });
 
 h2Server.on("stream", (stream, headers) => {
@@ -38,8 +43,17 @@ h2Server.on("stream", (stream, headers) => {
 h2Server.listen(8000, () => {
   const clientH2Session = http2.connect("http://localhost:8000");
 
+  const getClientH2Session = (disableSessionCache) => {
+    if (disableSessionCache) {
+      return http2.connect("http://localhost:8000");
+    }
+    return clientH2Session;
+  };
+
   const testRequest = (charToRepeat) => {
-    const req = clientH2Session.request({ ":method": "POST" });
+    const client = getClientH2Session(disableSessionCache);
+    const req = client.request({ ":method": "POST" });
+
     const totalLength = 1000;
     let remaining = totalLength;
     const chunkLength = 10;
@@ -60,6 +74,9 @@ h2Server.listen(8000, () => {
       data += chunk;
     });
     req.on("close", () => {
+      if (disableSessionCache) {
+        client.close();
+      }
       assert.strictEqual(data, charToRepeat.repeat(totalLength));
     });
     req.resume();
