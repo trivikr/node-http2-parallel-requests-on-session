@@ -21,12 +21,18 @@ const assert = require("assert");
 
   server.listen(8000, () => {
     const client = http2.connect("http://localhost:8000");
+    client.setTimeout(2000, () => {
+      console.log("session timing out");
+      client.close();
+      server.close();
+    });
 
     const testRequest = (charToRepeat) => {
       const req = client.request({ ":method": "POST" });
       const totalLength = 1000;
       let remaining = totalLength;
       const chunkLength = 10;
+
       const chunk = Buffer.alloc(chunkLength, charToRepeat);
 
       const writeChunk = () => {
@@ -45,17 +51,14 @@ const assert = require("assert");
       });
       req.on("close", () => {
         assert.strictEqual(data, charToRepeat.repeat(totalLength));
+        console.log(`${charToRepeat}: request closed`);
       });
       req.resume();
     };
 
     testRequest("a");
-    testRequest("b");
-
-    // Close client and server after five seconds.
     setTimeout(() => {
-      client.close();
-      server.close();
-    }, 5000);
+      testRequest("b");
+    }, 1000);
   });
 })();
