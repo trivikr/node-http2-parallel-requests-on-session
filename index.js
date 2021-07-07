@@ -11,9 +11,7 @@ const argv = yargs(hideBin(process.argv))
       type: "number",
       description:
         "Specifies the maximum number of concurrent streams permitted on an Http2Session." +
-        "There is no default value which implies, at least theoretically, 2^32-1 streams " +
-        "may be open concurrently at any given time in an Http2Session. The minimum value is 0." +
-        " The maximum allowed value is 2^32-1.",
+        " Minimum: 0. Maximum: 2^32-1.",
       default: 4294967295,
     },
   })
