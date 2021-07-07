@@ -1,0 +1,23 @@
+{
+  "name": "node-http2-parallel-requests-on-session",
+  "version": "1.0.0",
+  "description": "Test parallel requests to shared HTTP/2 session on Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trivikr/node-http2-parallel-requests-on-session.git"
+  },
+  "keywords": [],
+  "author": "Kamat, Trivikram",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trivikr/node-http2-parallel-requests-on-session/issues"
+  },
+  "homepage": "https://github.com/trivikr/node-http2-parallel-requests-on-session#readme",
+  "dependencies": {
+    "yargs": "17.0.1"
+  }
+}
